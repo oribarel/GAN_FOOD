@@ -103,9 +103,9 @@ if param.cuda:
 	
 ## Transforming images
 trans = transf.Compose([
-	transf.Scale((param.image_size, param.image_size)),
-  #transf.Scale(param.image_size), # rescale the image keeping the original aspect ratio
-  #transf.CenterCrop(param.image_size), # we get only the center of that rescaled
+	#transf.Scale((param.image_size, param.image_size)),
+  transf.Scale(param.image_size), # rescale the image keeping the original aspect ratio
+  transf.CenterCrop(param.image_size), # we get only the center of that rescaled
 	# This makes it into [0,1]
 	transf.ToTensor(),
 	# This makes it into [-1,1] so tanh will work properly
