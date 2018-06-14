@@ -38,7 +38,7 @@ parser.add_argument('--input_folder', default='/home/alexia/Datasets/Meow_64x64'
 parser.add_argument('--output_folder', default='/home/alexia/Output/DCGAN', help='output folder')
 parser.add_argument('--G_load', default='', help='Full path to Generator model to load (ex: /home/output_folder/run-5/models/G_epoch_11.pth) [to continue training]')
 parser.add_argument('--D_load', default='', help='Full path to Discriminator model to load (ex: /home/output_folder/run-5/models/D_epoch_11.pth) [to continue training]')
-parser.add_argument('--cuda', type=bool, default=False, help='enables cuda')
+parser.add_argument('--cuda', type=bool, action='store_true', default=False, help='enables cuda')
 parser.add_argument('--n_gpu', type=int, default=1, help='number of GPUs to use')
 parser.add_argument('--n_workers', type=int, default=2, help='Number of subprocess to use to load the data. Use at least 2 or the number of cpu cores - 1.')
 parser.add_argument('--weight_decay', type=float, default=0, help='L2 regularization weight. Greatly helps convergence but leads to artifacts in images, not recommended.')
@@ -103,9 +103,9 @@ if param.cuda:
 	
 ## Transforming images
 trans = transf.Compose([
-	#transf.Scale((param.image_size, param.image_size)),
-  transf.Scale(param.image_size), # rescale the image keeping the original aspect ratio
-  transf.CenterCrop(param.image_size), # we get only the center of that rescaled
+	transf.Scale((param.image_size, param.image_size)),
+  #transf.Scale(param.image_size), # rescale the image keeping the original aspect ratio
+  #transf.CenterCrop(param.image_size), # we get only the center of that rescaled
 	# This makes it into [0,1]
 	transf.ToTensor(),
 	# This makes it into [-1,1] so tanh will work properly
@@ -308,7 +308,6 @@ for epoch in range(param.n_epoch):
 		vutils.save_image(fake_test.data, '%s/run-%d/images/extra/fake_samples_epoch%03d_extra%01d.png' % (param.output_folder, run, epoch, ext), normalize=True)		
 
 	for i, data_batch in enumerate(dataset, 0):
-		print(str(i) + " start")
 		########################
 		# (1) Update D network: maximize log(D(x)) + log(1 - D(G(z))) #
 		########################
@@ -380,7 +379,6 @@ for epoch in range(param.n_epoch):
 			s = fmt % (epoch, param.n_epoch, i, len(dataset), errD.data[0], errG.data[0], D_real, D_fake, D_G, end - start)
 			print(s)
 			print(s, file=log_output)
-		print(str(i) + " end")
 	# Save temporary results (do checkpointing)
 	fmt = '%s/run-%d/models/%s_epoch_%d.pth'
 	if epoch % 25 == 0:
